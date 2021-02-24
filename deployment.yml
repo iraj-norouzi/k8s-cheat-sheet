@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx 
+        image: nginx
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: <Port>
+      nodeSelector:
+        app: nginx
+---
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+  namespace: default
+spec:
+  selector:
+    app: nginx
+  type: NodePort
+  ports:
+  - name: nginx-port
+    protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30001
+---
